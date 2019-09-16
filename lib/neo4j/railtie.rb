@@ -97,8 +97,15 @@ module Neo4j
     def default_session_type
       if ENV['NEO4J_URL']
         scheme = URI(ENV['NEO4J_URL']).scheme
-        fail "Invalid scheme for NEO4J_URL: #{scheme}" if !%w(http https bolt).include?(scheme)
-        scheme == 'https' ? 'http' : scheme
+        fail "Invalid scheme for NEO4J_URL: #{scheme}" if !%w(http https bolt bolt+routing).include?(scheme)
+
+        if scheme == 'https'
+          'http'
+        elsif scheme == 'bolt+routing'
+          'bolt_routing'
+        else
+          scheme
+        end
       else
         ENV['NEO4J_TYPE'] || :http
       end.to_sym
