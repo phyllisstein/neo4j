@@ -97,7 +97,7 @@ module Neo4j::Shared
         end
 
         def to_db(value)
-          value.to_s
+          value.dup.to_s.force_encoding(Encoding::UTF_8)
         end
         alias to_ruby to_db
       end

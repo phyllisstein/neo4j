@@ -13,12 +13,16 @@ module Neo4j::ActiveNode
 
       def define_enum_methods(property_name, enum_keys, options)
         super
-        define_enum_scopes(property_name, enum_keys)
+        define_enum_scopes(property_name, enum_keys, options)
       end
 
-      def define_enum_scopes(property_name, enum_keys)
+      def define_enum_scopes(property_name, enum_keys, options)
         enum_keys.each_key do |name|
-          scope name, -> { where(property_name => name) }
+          scope_name = name
+          scope_name = "#{ scope_name }_#{ property_name }" if options[:_suffix]
+          scope_name = "#{ options[:_prefix] }_#{ scope_name }" if options[:prefix]
+
+          scope scope_name, -> { where(property_name => name) }
         end
       end
     end
